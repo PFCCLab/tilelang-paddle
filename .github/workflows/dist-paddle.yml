@@ -69,7 +69,8 @@ jobs:
           python3 -c "import tilelang; print(tilelang.__version__)"
 
       - name: Upload SDist
-        # Not PR to save artifact storage, as SDist is only needed for releases.        uses: actions/upload-artifact@v5
+        # Not PR to save artifact storage, as SDist is only needed for releases.
+        uses: actions/upload-artifact@v5
         with:
           name: sdist
           path: dist/*.tar.gz
