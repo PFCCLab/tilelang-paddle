@@ -2,26 +2,51 @@
 
 <div align="center">
 
-# Tile Language
+# Tile Language ❤️ PaddlePaddle
+
 [![PyPI version](https://badge.fury.io/py/tilelang.svg)](https://badge.fury.io/py/tilelang)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/tile-ai/tilelang) [![Discord](https://img.shields.io/badge/Discord-%235865F2.svg?logo=discord&logoColor=white)](https://discord.gg/TUrHyJnKPG)
 
 </div>
+
+> [!NOTE]
+>
+> This repo is a fork of the original tilelang project, with modifications to enhance compatibility and integration with PaddlePaddle.
+>
+> **Installation**
+>
+> ```bash
+> pip install tilelang-paddle
+> ```
+>
+> **Usage**
+>
+> ```python
+> import paddle
+> paddle.compat.enable_torch_proxy(scope={"tilelang"})  # Enable torch proxy before importing tilelang
+> import tilelang
+> # use tilelang
+> ```
+
+The original README.md content is as follows:
+
+---
 
 Tile Language (**tile-lang**) is a concise domain-specific language designed to streamline the development of high-performance GPU/CPU kernels (e.g., GEMM, Dequant GEMM, FlashAttention, LinearAttention). By employing a Pythonic syntax with an underlying compiler infrastructure on top of [TVM](https://tvm.apache.org/), tile-lang allows developers to focus on productivity without sacrificing the low-level optimizations necessary for state-of-the-art performance.
 
 <img src=./images/MatmulExample.png />
 
 ## Latest News
+
 - 10/30/2025 📦: We have released v0.1.6.post2, which is the last version compatible with Python 3.8.
 - 10/07/2025 🍎: Added Apple Metal Device support, check out [Pull Request #799](https://github.com/tile-ai/tilelang/pull/799) for details.
-- 09/29/2025  🎉: Thrilled to announce that ​​AscendC​​ and ​Ascend​NPU IR​​ backends targeting Huawei Ascend chips are now supported!
-Check out the preview here:
-🔗 [link](https://github.com/tile-ai/tilelang-ascend).
-This includes implementations across two branches:
-[ascendc_pto](https://github.com/tile-ai/tilelang-ascend) and
-[npuir](https://github.com/tile-ai/tilelang-ascend/tree/npuir).
-Feel free to explore and share your feedback! 
+- 09/29/2025 🎉: Thrilled to announce that ​​AscendC​​ and ​Ascend​NPU IR​​ backends targeting Huawei Ascend chips are now supported!
+  Check out the preview here:
+  🔗 [link](https://github.com/tile-ai/tilelang-ascend).
+  This includes implementations across two branches:
+  [ascendc_pto](https://github.com/tile-ai/tilelang-ascend) and
+  [npuir](https://github.com/tile-ai/tilelang-ascend/tree/npuir).
+  Feel free to explore and share your feedback!
 - 07/04/2025 🚀: Introduced `T.gemm_sp` for 2:4 sparse tensor core support, check out [Pull Request #526](https://github.com/tile-ai/tilelang/pull/526) for details.
 - 06/05/2025 ✨: Added [NVRTC Backend](https://github.com/tile-ai/tilelang/pull/461) to significantly reduce compilation time for cute templates!
 - 04/14/2025 🚀: Added high-performance FlashMLA implementation for AMD MI300X, achieving performance parity with hand-optimized assembly kernels of Aiter! See [example_mla_amd](./examples/deepseek_mla/amd/README.md) for details.
@@ -32,9 +57,11 @@ Feel free to explore and share your feedback!
 - 01/20/2025 ✨: We are excited to announce that tile-lang, a dsl for high performance AI workloads, is now open source and available to the public!
 
 ## Tested Devices
+
 Although tile-lang aims to be portable across a range of Devices, it has been specifically tested and validated on the following devices: for NVIDIA GPUs, this includes the H100 (with Auto TMA/WGMMA support), A100, V100, RTX 4090, RTX 3090, and RTX A6000; for AMD GPUs, it includes the MI250 (with Auto MatrixCore support) and the MI300X (with Async Copy support).
 
 ## OP Implementation Examples
+
 **tile-lang** provides the building blocks to implement a wide variety of operators. Some examples include:
 
 - [Matrix Multiplication](./examples/gemm/)
@@ -45,7 +72,6 @@ Although tile-lang aims to be portable across a range of Devices, it has been sp
 - [Native Sparse Attention](./examples/deepseek_nsa/)
 
 Within the `examples` directory, you will also find additional complex kernels—such as convolutions, forward/backward passes for FlashAttention, more operators will continuously be added.
-
 
 ## Benchmark Summary
 
@@ -61,7 +87,7 @@ TileLang achieves exceptional performance across a variety of computational patt
       <img src="./examples/deepseek_mla/figures/bs128_float16.png" alt="mla decode performance bs128 on H100" width="100%" />
     </div>
   </div>
-  
+
 - Flash Attention Performance on H100
 
   <div align="center">    <img src="./images/mha_performance_h100.png" alt="operator performance on H100" width=80% />
@@ -80,6 +106,7 @@ TileLang achieves exceptional performance across a variety of computational patt
   </div>
 
 ## Installation
+
 ### Method 1: Install with Pip
 
 The quickest way to get started is to install the latest release from PyPI:
@@ -105,10 +132,12 @@ pip install -e . -v # remove -e option if you don't want to install in editable 
 ```
 
 ### Method 2: Build from Source
+
 We currently provide three ways to install **tile-lang** from source:
- - [Install from Source (using your own TVM installation)](./docs/get_started/Installation.md#method-1-install-from-source-using-your-own-tvm-installation)
- - [Install from Source (using the bundled TVM submodule)](./docs/get_started/Installation.md#method-2-install-from-source-using-the-bundled-tvm-submodule)
- - [Install Using the Provided Script](./docs/get_started/Installation.md#method-3-install-using-the-provided-script)
+
+- [Install from Source (using your own TVM installation)](./docs/get_started/Installation.md#method-1-install-from-source-using-your-own-tvm-installation)
+- [Install from Source (using the bundled TVM submodule)](./docs/get_started/Installation.md#method-2-install-from-source-using-the-bundled-tvm-submodule)
+- [Install Using the Provided Script](./docs/get_started/Installation.md#method-3-install-using-the-provided-script)
 
 ### Method 3: Install with Nightly Version
 
@@ -168,7 +197,7 @@ def matmul(M, N, K, block_M, block_N, block_K, dtype="float16", accum_dtype="flo
                 # Perform a tile-level GEMM on the shared buffers
                 # Currently we dispatch to the cute/hip on Nvidia/AMD GPUs
                 T.gemm(A_shared, B_shared, C_local)
-            
+
             # relu
             for i, j in T.Parallel(block_M, block_N):
                 C_local[i, j] = T.max(C_local[i, j], 0)
