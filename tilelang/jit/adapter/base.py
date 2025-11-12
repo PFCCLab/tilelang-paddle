@@ -4,8 +4,10 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from typing import Any, Callable
-from tilelang.engine.param import KernelParam
+
 import torch
+
+from tilelang.engine.param import KernelParam
 
 
 class BaseKernelAdapter(ABC):
@@ -74,6 +76,8 @@ class BaseKernelAdapter(ABC):
         unavailable, returns ``torch.device('cpu')``.
         """
         if torch.cuda.is_available():
+            import paddle
+            return lambda: paddle.framework._current_expected_place()
             try:
                 torch.cuda._lazy_init()
                 current_device = torch._C._cuda_getDevice
