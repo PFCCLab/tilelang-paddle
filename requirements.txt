@@ -1,5 +1,6 @@
 # Runtime requirements
-apache-tvm-ffi>=0.1.2
+
+apache-tvm-ffi~=0.1.2
 cloudpickle
 ml-dtypes
 numpy>=1.23.5

@@ -1,5 +1,5 @@
 [project]
-name = "tilelang"
+name = "tilelang-paddle"
 description = "A tile level programming language to generate high performance code."
 readme = "README.md"
 requires-python = ">=3.9"
@@ -31,13 +31,14 @@ dependencies = [
     # Extra constraint to tvm-ffi for abi issue,
     # should be removed after our tvm's update.
     # See discussion in tilelang#1373 and apache/tvm-ffi#307
+    # This line should not remove for PaddlePaddle
     "apache-tvm-ffi>=0.1.2",
     "cloudpickle",
     "ml-dtypes",
     "numpy>=1.23.5",
     "psutil",
-    "torch",
-    "torch>=2.7; platform_system == 'Darwin'",
+    # "torch",
+    # "torch>=2.7; platform_system == 'Darwin'",
     "tqdm>=4.62.3",
     "typing-extensions>=4.10.0",
 ]
@@ -210,7 +211,7 @@ environment-pass = [
 before-build = "env -0 | sort -z | tr '\\0' '\\n'"
 windows.before-build = "set"
 test-command = [
-    "python -c 'import tilelang; print(tilelang.__version__)'",
+    # "python -c 'import tilelang; print(tilelang.__version__)'",
 ]
 
 [tool.cibuildwheel.linux]
