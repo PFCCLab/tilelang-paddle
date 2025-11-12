@@ -188,7 +188,7 @@ class TVMFFIKernelAdapter(BaseKernelAdapter):
                 return "float8_e5m2"
             # Strip torch. prefix for readability
             s = str(dtype)
-            return s[6:] if s.startswith("torch.") else s
+            return s[6:] if s.startswith("paddle.") else s
 
         def func(*inputs: torch.Tensor | Any):
             # Validate input count strictly
