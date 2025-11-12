@@ -2,17 +2,42 @@
 
 <div align="center">
 
-# Tile Language
+# Tile Language ❤️ PaddlePaddle
+
 [![PyPI version](https://badge.fury.io/py/tilelang.svg)](https://badge.fury.io/py/tilelang)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/tile-ai/tilelang) [![Discord](https://img.shields.io/badge/Discord-%235865F2.svg?logo=discord&logoColor=white)](https://discord.gg/TUrHyJnKPG)
 
 </div>
+
+> [!NOTE]
+>
+> This repo is a fork of the original tilelang project, with modifications to enhance compatibility and integration with PaddlePaddle.
+>
+> **Installation**
+>
+> ```bash
+> pip install tilelang-paddle
+> ```
+>
+> **Usage**
+>
+> ```python
+> import paddle
+> paddle.enable_compat(scope={"tilelang"})  # Enable torch compat before importing tilelang
+> import tilelang
+> # use tilelang
+> ```
+
+The original README.md content is as follows:
+
+---
 
 Tile Language (**tile-lang**) is a concise domain-specific language designed to streamline the development of high-performance GPU/CPU kernels (e.g., GEMM, Dequant GEMM, FlashAttention, LinearAttention). By employing a Pythonic syntax with an underlying compiler infrastructure on top of [TVM](https://tvm.apache.org/), tile-lang allows developers to focus on productivity without sacrificing the low-level optimizations necessary for state-of-the-art performance.
 
 <img src=./images/MatmulExample.png />
 
 ## Latest News
+
 - 12/18/2025 🚀: Added [CuTeDSL backend](https://github.com/tile-ai/tilelang/pull/1421) support, enabling compilation to NVIDIA CUTLASS CuTe DSL! Join us in building and optimizing this exciting new backend: [Issue #1454](https://github.com/tile-ai/tilelang/issues/1454).
 - 12/17/2025 🔬: Integrated [Z3 theorem prover](https://github.com/tile-ai/tilelang/pull/1367) into TVM Arith Analyzer, bringing SMT-based symbolic reasoning for enhanced optimizations and automatic correctness verification!
 - 10/31/2025 🔧: Migrated to [apache-tvm-ffi](https://github.com/tile-ai/tilelang/pull/1108), significantly reducing CPU overhead!
@@ -35,9 +60,11 @@ Feel free to explore and share your feedback!
 - 01/20/2025 ✨: We are excited to announce that tile-lang, a dsl for high performance AI workloads, is now open source and available to the public!
 
 ## Tested Devices
+
 Although tile-lang aims to be portable across a range of Devices, it has been specifically tested and validated on the following devices: for NVIDIA GPUs, this includes the H100 (with Auto TMA/WGMMA support), A100, V100, RTX 4090, RTX 3090, and RTX A6000; for AMD GPUs, it includes the MI250 (with Auto MatrixCore support) and the MI300X (with Async Copy support).
 
 ## OP Implementation Examples
+
 **tile-lang** provides the building blocks to implement a wide variety of operators. Some examples include:
 
 - [Matrix Multiplication](./examples/gemm/)
@@ -82,6 +109,7 @@ TileLang achieves exceptional performance across a variety of computational patt
   </div>
 
 ## Installation
+
 ### Method 1: Install with Pip
 
 The quickest way to get started is to install the latest release from PyPI:
@@ -107,7 +135,9 @@ pip install -e . -v # remove -e option if you don't want to install in editable 
 ```
 
 ### Method 2: Build from Source
+
 We currently provide three ways to install **tile-lang** from source:
+
 - [Install from Source (using your own TVM installation)](./docs/get_started/Installation.md#method-1-install-from-source-using-your-own-tvm-installation)
 - [Install from Source (using the bundled TVM submodule)](./docs/get_started/Installation.md#method-2-install-from-source-using-the-bundled-tvm-submodule)
 - [Install Using the Provided Script](./docs/get_started/Installation.md#method-3-install-using-the-provided-script)
