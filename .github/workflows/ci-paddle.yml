@@ -32,10 +32,12 @@ jobs:
           WITH_AVX: "ON"
           PY_VERSION: "3.10"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          no_proxy: "bcebos.com,apiin.im.baidu.com,gitee.com,aliyun.com,.baidu.com,.tuna.tsinghua.edu.cn"
         run: |
           docker_image=ccr-2vdh3abv-pub.cnc.bj.baidubce.com/paddlepaddle/paddle:cuda129-coverage-test
           docker run -d -t --gpus all --name ${{ env.container_name }} \
             -v "/dev/shm:/dev/shm" \
+            -v ${{ github.workspace }}/../../..:${{ github.workspace }}/../../.. \
             -v ${{ github.workspace }}:/workspace \
             -e FLAGS_fraction_of_gpu_memory_to_use \
             -e CTEST_PARALLEL_LEVEL \
@@ -44,6 +46,7 @@ jobs:
             -e WITH_AVX \
             -e PY_VERSION \
             -e GITHUB_TOKEN \
+            -e no_proxy \
             -w /workspace \
             --network host \
             ${docker_image}
@@ -52,6 +55,7 @@ jobs:
         run: |
           docker exec -t ${{ env.container_name }} /bin/bash -c '
           set -e
+          source ${{ github.workspace }}/../../../proxy
           git config --global --add safe.directory "*"
           # Clean workspace
           find . -maxdepth 1 ! -name "." -exec rm -rf {} +
@@ -67,6 +71,7 @@ jobs:
         run: |
           docker exec -t ${{ env.container_name }} /bin/bash -c '
           set -e
+          source ${{ github.workspace }}/../../../proxy
           pip install -r requirements-test.txt
           pip install -e .
           '
