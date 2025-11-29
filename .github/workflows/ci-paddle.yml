@@ -78,7 +78,7 @@ jobs:
           source $HOME/.local/bin/env
 
           # Create and activate virtual environment
-          uv venv .venv
+          uv venv .venv --seed
           source .venv/bin/activate
 
           # Install paddle
