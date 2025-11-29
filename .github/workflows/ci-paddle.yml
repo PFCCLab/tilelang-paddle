@@ -20,20 +20,67 @@ jobs:
     runs-on:
       group: H20
     timeout-minutes: 30
+    env:
+      container_name: tilelang-paddle-test-${{ github.run_id }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
-        with:
-          fetch-depth: 1
-          submodules: recursive
+      - name: Check docker image and run container
+        env:
+          FLAGS_fraction_of_gpu_memory_to_use: 0.15
+          CTEST_PARALLEL_LEVEL: 2
+          WITH_GPU: "ON"
+          CUDA_ARCH_NAME: Hopper
+          WITH_AVX: "ON"
+          PY_VERSION: "3.10"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          docker_image=ccr-2vdh3abv-pub.cnc.bj.baidubce.com/paddlepaddle/paddle:cuda129-coverage-test
+          docker run -d -t --gpus all --name ${{ env.container_name }} \
+            -v "/dev/shm:/dev/shm" \
+            -v ${{ github.workspace }}:/workspace \
+            -e FLAGS_fraction_of_gpu_memory_to_use \
+            -e CTEST_PARALLEL_LEVEL \
+            -e WITH_GPU \
+            -e CUDA_ARCH_NAME \
+            -e WITH_AVX \
+            -e PY_VERSION \
+            -e GITHUB_TOKEN \
+            -w /workspace \
+            --network host \
+            ${docker_image}
 
-      - name: Setup Python and uv with caching
-        id: setup-uv
-        uses: astral-sh/setup-uv@v7
-        with:
-          python-version: "3.12"
-          activate-environment: true
+      - name: Checkout repository
+        run: |
+          docker exec -t ${{ env.container_name }} /bin/bash -c '
+          set -e
+          git config --global --add safe.directory "*"
+          # Clean workspace
+          find . -maxdepth 1 ! -name "." -exec rm -rf {} +
+          # Checkout
+          git init
+          git remote add origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+          git fetch origin ${{ github.ref }} --depth=1
+          git checkout FETCH_HEAD
+          git submodule update --init --recursive
+          '
+
+      - name: Install dependencies
+        run: |
+          docker exec -t ${{ env.container_name }} /bin/bash -c '
+          set -e
+          pip install -r requirements-test.txt
+          pip install -e .
+          '
 
       - name: Run tests
         run: |
-          uv run --no-project --with=test -m -- pytest tests/
+          docker exec -t ${{ env.container_name }} /bin/bash -c '
+          set -e
+          pytest testing/
+          '
+
+      - name: Terminate and delete the container
+        if: always()
+        run: |
+          set +e
+          docker stop ${{ env.container_name }}
+          docker rm ${{ env.container_name }}
