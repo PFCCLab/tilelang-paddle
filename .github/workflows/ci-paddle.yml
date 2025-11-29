@@ -72,15 +72,29 @@ jobs:
           docker exec -t ${{ env.container_name }} /bin/bash -c '
           set -e
           source ${{ github.workspace }}/../../../proxy
-          pip install -r requirements-test.txt
-          pip install -e .
+
+          # Install uv
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          source $HOME/.cargo/env
+
+          # Create and activate virtual environment
+          uv venv .venv
+          source .venv/bin/activate
+
+          # Install paddle
+          uv pip install --pre paddlepaddle-gpu -i https://www.paddlepaddle.org.cn/packages/nightly/cu129/
+
+          # Install project and minimal test runner
+          uv pip install pytest
+          uv pip install -e .
           '
 
       - name: Run tests
         run: |
           docker exec -t ${{ env.container_name }} /bin/bash -c '
           set -e
-          pytest testing/
+          source .venv/bin/activate
+          pytest tests_paddle/
           '
 
       - name: Terminate and delete the container
