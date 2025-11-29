@@ -1,6 +1,8 @@
 import numpy as np
 import paddle
 
+paddle.compat.enable_torch_proxy(scope={"tilelang"})
+
 import tilelang
 import tilelang.language as T
 
