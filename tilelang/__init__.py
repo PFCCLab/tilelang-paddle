@@ -110,6 +110,10 @@ del _init_logger
 def _lazy_load_lib():
     import torch  # noqa: F401 # preload torch to avoid dlopen errors
 
+    # Preload cudart for frameworks like PaddlePaddle that don't pre-load it
+    # (unlike PyTorch which does)
+    _preload_libcudart()
+
     old_flags = sys.getdlopenflags()
     old_init = ctypes.CDLL.__init__
 
@@ -123,6 +127,55 @@ def _lazy_load_lib():
     finally:
         sys.setdlopenflags(old_flags)
         ctypes.CDLL.__init__ = old_init
+
+
+def _preload_libcudart() -> None:
+    """Preload libcudart to make CUDA symbols globally available.
+
+    This is necessary for frameworks like PaddlePaddle which don't preload
+    libcudart into global namespace (unlike PyTorch).
+    """
+    # List of potential cudart paths to try
+    cudart_paths = []
+
+    # 1. Try nvidia-cuda-runtime package (installed via pip)
+    for site_dir in [p for p in sys.path if "site-packages" in p]:
+        nvidia_path = Path(site_dir) / "nvidia" / "cuda_runtime" / "lib" / "libcudart.so.12"
+        if nvidia_path.exists():
+            cudart_paths.append(str(nvidia_path))
+
+    # 2. Try system CUDA installations
+    system_paths = [
+        "/usr/local/cuda/lib64/libcudart.so.12",
+        "/usr/local/cuda/lib64/libcudart.so.11.0",
+        "/usr/local/cuda/lib64/libcudart.so.11",
+        "/usr/local/cuda/lib64/libcudart.so",
+        "/usr/local/cuda/lib/libcudart.so.12",
+        "/usr/local/cuda/lib/libcudart.so.11.0",
+        "/usr/local/cuda/lib/libcudart.so.11",
+        "/usr/local/cuda/lib/libcudart.so",
+    ]
+    cudart_paths.extend([p for p in system_paths if Path(p).exists()])
+
+    # 3. Try SONAME-based loading (let system find it)
+    cudart_paths.append("libcudart.so.12")
+    cudart_paths.append("libcudart.so.11.0")
+    cudart_paths.append("libcudart.so.11")
+    cudart_paths.append("libcudart.so")
+
+    # Try each path
+    for lib_path in cudart_paths:
+        try:
+            # Use RTLD_GLOBAL to make symbols available globally
+            ctypes.CDLL(lib_path, mode=os.RTLD_GLOBAL)
+            logger.debug(f"Successfully preloaded libcudart from: {lib_path}")
+            return
+        except Exception:
+            continue
+
+    # If we get here, couldn't load cudart - log warning but don't fail
+    # The C++ stub will try again with more paths
+    logger.debug("Could not preload libcudart, C++ stub will attempt loading")
 
 
 # Skip heavy imports in light import mode
